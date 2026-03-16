@@ -16,8 +16,7 @@ function SignIn({ setIsLoggedIn, setUser }) {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_URL}/api/auth/signin`, {
-        method: 'POST',
+ const res = await fetch(`${API_URL}/api/auth/login`, {        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
