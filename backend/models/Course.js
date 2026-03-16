@@ -11,6 +11,16 @@ const courseSchema = new mongoose.Schema({
     required: [true, 'Instructor name is required'],
     trim: true
   },
+  description: {
+    type: String,
+    required: [true, 'Description is required'],
+    trim: true
+  },
+  category: {
+    type: String,
+    required: true,
+    trim: true
+  },
   price: {
     type: Number,
     required: [true, 'Price is required'],
@@ -24,28 +34,35 @@ const courseSchema = new mongoose.Schema({
   },
   students: {
     type: Number,
-    default: 0
+    default: 0,
+    min: 0
   },
   thumbnail: {
     type: String,
-    default: 'https://via.placeholder.com/480x270'
+    required: true
   },
-  description: {
+  videoUrl: {
     type: String,
-    required: [true, 'Description is required']
+    required: true,
+    validate: {
+      validator: function(v) {
+        return /youtube\.com|youtu\.be/.test(v);
+      },
+      message: 'Must be a valid YouTube URL'
+    }
   },
-  category: {
+  duration: {
     type: String,
-    required: [true, 'Category is required'],
-    enum: ['Development', 'Data Science', 'Cloud', 'Design', 'Business', 'Marketing']
+    default: '0 hours'
   },
   lectures: {
     type: Number,
     default: 0
   },
-  duration: {
+  level: {
     type: String,
-    default: '0 hours'
+    enum: ['Beginner', 'Intermediate', 'Advanced'],
+    default: 'Beginner'
   },
   createdAt: {
     type: Date,
@@ -53,4 +70,5 @@ const courseSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.model('Course', courseSchema);
+const Course = mongoose.model('Course', courseSchema);
+export default Course;
