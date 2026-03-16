@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import courseRoutes from './routes/courses.js';
 import userRoutes from './routes/users.js';
+import enrollmentRoutes from './routes/enrollments.js';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/courses', courseRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 app.get('/api/health', async (req, res) => {
   try {
