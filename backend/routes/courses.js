@@ -4,136 +4,186 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 
+// Connect to MongoDB
+const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/udemy-clone', {
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+  } catch (err) {
+    console.error('MongoDB connection error:', err);
+  }
+};
+
+// Sample courses with YouTube videos
 const sampleCourses = [
   {
     title: 'Complete Python Bootcamp',
     instructor: 'Jose Portilla',
-    price: 899,
+    description: 'Learn Python like a professional. Start from basics and build real-world applications.',
+    category: 'Development',
+    price: 0,
     rating: 4.6,
     students: 1500000,
     thumbnail: 'https://img-c.udemycdn.com/course/480x270/396876_2ed3_12.jpg',
-    description: 'Learn Python like a professional. Start from basics and build real-world applications.',
-    category: 'Development',
-    lectures: 150,
+    videoUrl: 'https://www.youtube.com/embed/rfscVS0vtik',
     duration: '22 hours',
+    lectures: 150,
+    level: 'Beginner'
   },
   {
     title: 'Machine Learning A-Z',
     instructor: 'Kirill Eremenko',
-    price: 1299,
+    description: 'Master Machine Learning with Python, R, and Machine Learning algorithms.',
+    category: 'Development',
+    price: 0,
     rating: 4.5,
     students: 890000,
     thumbnail: 'https://img-c.udemycdn.com/course/480x270/950390_270f_3.jpg',
-    description: 'Learn to create Machine Learning algorithms in Python and R.',
-    category: 'Data Science',
-    lectures: 320,
-    duration: '42 hours',
+    videoUrl: 'https://www.youtube.com/embed/GwIo3gDZCVQ',
+    duration: '40 hours',
+    lectures: 300,
+    level: 'Intermediate'
   },
   {
-    title: 'The Web Developer Bootcamp',
+    title: 'Web Development Bootcamp',
     instructor: 'Colt Steele',
-    price: 1099,
-    rating: 4.7,
-    students: 720000,
-    thumbnail: 'https://img-c.udemycdn.com/course/480x270/1565838_e54e_16.jpg',
-    description: 'Become a full-stack web developer with HTML, CSS, JS, Node, React, and more.',
+    description: 'Learn web development from scratch with HTML, CSS, JavaScript, React, Node.js and more.',
     category: 'Development',
+    price: 0,
+    rating: 4.7,
+    students: 2000000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/1028592_68c6_2.jpg',
+    videoUrl: 'https://www.youtube.com/embed/jG7uLcjwgP0',
+    duration: '63 hours',
+    lectures: 420,
+    level: 'Beginner'
+  },
+  {
+    title: 'Advanced JavaScript',
+    instructor: 'Jonas Schmedtmann',
+    description: 'Master advanced JavaScript concepts including closures, prototypes, async/await, and more.',
+    category: 'Development',
+    price: 0,
+    rating: 4.8,
+    students: 750000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/768998_03c5.jpg',
+    videoUrl: 'https://www.youtube.com/embed/W6NZfCO5tTE',
+    duration: '28 hours',
+    lectures: 240,
+    level: 'Advanced'
+  },
+  {
+    title: 'React.js Complete Course',
+    instructor: 'Stephen Grider',
+    description: 'Build amazing single page applications with React, Redux, Firebase and more.',
+    category: 'Development',
+    price: 0,
+    rating: 4.6,
+    students: 1200000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/923574_8457_2.jpg',
+    videoUrl: 'https://www.youtube.com/embed/4UZrsTqkcW4',
+    duration: '32 hours',
     lectures: 280,
-    duration: '55 hours',
+    level: 'Intermediate'
+  },
+  {
+    title: 'Node.js & Express Backend',
+    instructor: 'Andrew Mead',
+    description: 'Build complete REST APIs with Node.js, Express, MongoDB and JWT authentication.',
+    category: 'Development',
+    price: 0,
+    rating: 4.7,
+    students: 950000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/1156788_810f_2.jpg',
+    videoUrl: 'https://www.youtube.com/embed/0B2raQ-ZLV0',
+    duration: '35 hours',
+    lectures: 310,
+    level: 'Intermediate'
+  },
+  {
+    title: 'Data Science with Python',
+    instructor: 'Udemy Team',
+    description: 'Learn data analysis, visualization, and machine learning with Python libraries like Pandas and NumPy.',
+    category: 'Data Science',
+    price: 0,
+    rating: 4.5,
+    students: 680000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/1384056_00a6.jpg',
+    videoUrl: 'https://www.youtube.com/embed/ua-CiDNNj30',
+    duration: '20 hours',
+    lectures: 180,
+    level: 'Beginner'
   },
   {
     title: 'AWS Certified Solutions Architect',
-    instructor: 'Stephane Maarek',
-    price: 999,
-    rating: 4.7,
-    students: 520000,
-    thumbnail: 'https://img-c.udemycdn.com/course/480x270/268818_486c_4.jpg',
-    description: 'Pass the AWS Certified Solutions Architect Associate exam.',
-    category: 'Cloud',
-    lectures: 180,
-    duration: '28 hours',
-  },
-  {
-    title: 'Complete React Developer Course',
-    instructor: 'Yihua Zhang',
-    price: 799,
+    instructor: 'A Cloud Guru',
+    description: 'Pass the AWS Solutions Architect exam with comprehensive training and hands-on labs.',
+    category: 'Cloud Computing',
+    price: 0,
     rating: 4.6,
-    students: 280000,
-    thumbnail: 'https://img-c.udemycdn.com/course/480x270/3216560_0e79_16.jpg',
-    description: 'Master React from scratch and build modern web applications.',
-    category: 'Development',
+    students: 500000,
+    thumbnail: 'https://img-c.udemycdn.com/course/480x270/1196278_31a3.jpg',
+    videoUrl: 'https://www.youtube.com/embed/Ia-UEYMA44s',
+    duration: '25 hours',
     lectures: 200,
-    duration: '30 hours',
-  },
-  {
-    title: 'SQL for Data Science',
-    instructor: 'Philipp Muellauer',
-    price: 699,
-    rating: 4.4,
-    students: 180000,
-    thumbnail: 'https://img-c.udemycdn.com/course/480x270/4095492_978b_2.jpg',
-    description: 'Learn SQL for data analysis, data science, and business intelligence.',
-    category: 'Data Science',
-    lectures: 90,
-    duration: '12 hours',
-  },
+    level: 'Advanced'
+  }
 ];
 
-// Connect to MongoDB - handle serverless functions properly
-const connectDB = async () => {
-  if (mongoose.connection.readyState === 1) return mongoose.connection;
-  await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/udemy-clone', {
-    serverSelectionTimeoutMS: 5000,
-    socketTimeoutMS: 45000,
-    bufferCommands: false,
-  });
-  return mongoose.connection;
-};
-
-// GET all courses
+// Get all courses
 router.get('/', async (req, res) => {
   try {
-    let courses;
-    try {
-      await connectDB();
-      courses = await Course.find();
-      if (courses.length === 0) {
-        await Course.insertMany(sampleCourses);
-        courses = await Course.find();
-      }
-    } catch (dbError) {
-      console.log('DB connection failed, using sample data:', dbError.message);
-      courses = sampleCourses;
+    await connectDB();
+    
+    // Try to get from MongoDB
+    let courses = await Course.find();
+    
+    // If no courses in DB, return sample courses
+    if (courses.length === 0) {
+      return res.json(sampleCourses);
     }
-    res.json({ success: true, data: courses, message: courses === sampleCourses ? 'Sample data returned (DB unavailable)' : 'Courses fetched from database' });
+    
+    res.json(courses);
   } catch (error) {
-    res.status(200).json({ success: true, data: sampleCourses, message: 'Sample data returned (fallback)' });
+    console.error('Error fetching courses:', error);
+    // Return sample courses as fallback
+    res.json(sampleCourses);
   }
 });
 
-// GET single course
+// Get course by ID
 router.get('/:id', async (req, res) => {
   try {
     await connectDB();
+    
     const course = await Course.findById(req.params.id);
+    
     if (!course) {
-      const sample = sampleCourses.find(c => c.title.toLowerCase().includes(req.params.id.toLowerCase()));
-      return res.json({ success: true, data: sample || sampleCourses[0], message: sample ? 'Sample course data' : 'Sample default course' });
+      // Try to find in sample courses
+      const sampleCourse = sampleCourses.find(c => c.title === req.params.id);
+      if (sampleCourse) return res.json(sampleCourse);
+      return res.status(404).json({ message: 'Course not found' });
     }
-    res.json({ success: true, data: course });
+    
+    res.json(course);
   } catch (error) {
-    res.status(200).json({ success: true, data: sampleCourses[0], message: 'Sample course data (fallback)' });
+    res.status(500).json({ message: error.message });
   }
 });
 
-// POST create course
+// Create course (for admin)
 router.post('/', async (req, res) => {
   try {
     await connectDB();
-    const course = await Course.create(req.body);
-    res.status(201).json({ success: true, data: course });
+    
+    const course = new Course(req.body);
+    const savedCourse = await course.save();
+    res.status(201).json(savedCourse);
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
