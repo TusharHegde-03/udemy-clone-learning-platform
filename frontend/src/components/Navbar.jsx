@@ -4,85 +4,120 @@ function Navbar({ isLoggedIn, user, onLogout }) {
   const navigate = useNavigate();
 
   const navbarStyle = {
-    backgroundColor: '#2d2f31',
-    color: 'white',
-    padding: '12px 24px',
+    backgroundColor: '#0a0a0a',
+    color: '#e0e0e0',
+    padding: '14px 28px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    borderBottom: '1px solid #222',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000,
+    boxShadow: '0 2px 20px rgba(0,0,0,0.4)',
   };
 
   const logoStyle = {
-    fontSize: '24px',
-    fontWeight: 'bold',
-    color: '#a435f0',
+    fontSize: '26px',
+    fontWeight: '800',
+    color: '#8b5cf6',
+    cursor: 'pointer',
+    letterSpacing: '-1px',
+    textShadow: '0 0 20px rgba(139, 92, 246, 0.3)',
+  };
+
+  const logoSpanStyle = {
+    color: '#e0e0e0',
   };
 
   const navStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '16px',
+    gap: '22px',
   };
 
-  const linkStyle = {
-    color: 'white',
+  const navLinkStyle = {
+    color: '#b0b0b0',
     textDecoration: 'none',
+    fontSize: '15px',
     fontWeight: '500',
-  };
-
-  const buttonStyle = {
-    backgroundColor: '#a435f0',
-    color: 'white',
-    border: 'none',
-    padding: '10px 20px',
-    borderRadius: '4px',
+    transition: 'color 0.2s',
     cursor: 'pointer',
-    fontWeight: '600',
   };
 
-  const searchBarStyle = {
-    backgroundColor: 'white',
-    color: '#333',
+  const searchBoxStyle = {
+    backgroundColor: '#1a1a1a',
+    border: '1px solid #333',
+    borderRadius: '22px',
+    padding: '8px 14px',
+    color: '#e0e0e0',
+    fontSize: '14px',
+    minWidth: '240px',
+    outline: 'none',
+  };
+
+  const buttonPrimaryStyle = {
+    backgroundColor: '#8b5cf6',
+    color: '#fff',
+    padding: '10px 22px',
+    borderRadius: '24px',
     border: 'none',
-    padding: '8px 12px',
-    borderRadius: '4px',
-    width: '300px',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    boxShadow: '0 2px 12px rgba(139, 92, 246, 0.3)',
+  };
+
+  const buttonSecondaryStyle = {
+    backgroundColor: 'transparent',
+    color: '#e0e0e0',
+    padding: '10px 22px',
+    borderRadius: '24px',
+    border: '1px solid #444',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
   };
 
   return (
     <nav style={navbarStyle}>
-      <Link to="/" style={{ ...logoStyle, textDecoration: 'none' }}>
-        UdemyClone
-      </Link>
-      <input
-        type="text"
-        placeholder="Search for anything"
-        style={searchBarStyle}
-      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '30px' }}>
+        <Link to="/" style={{ textDecoration: 'none' }}>
+          <span style={logoStyle}>
+            Udemy<span style={logoSpanStyle}>Clone</span>
+          </span>
+        </Link>
+        <input
+          type="text"
+          placeholder="Search courses..."
+          style={searchBoxStyle}
+          onChange={(e) => {
+            if (e.target.value) {
+              navigate(`/courses?search=${e.target.value}`);
+            } else {
+              navigate('/courses');
+            }
+          }}
+        />
+      </div>
       <div style={navStyle}>
         {isLoggedIn ? (
           <>
-            <Link to="/courses" style={linkStyle}>
-              My Learning
+            <Link to="/courses" style={navLinkStyle}>Courses</Link>
+            <Link to="/dashboard" style={navLinkStyle}>My Learning</Link>
+            <Link to="/dashboard" style={navLinkStyle}>
+              <span style={{ marginRight: '8px' }}>Hi, {user?.name || 'User'}</span>
             </Link>
-            <Link to="/dashboard" style={linkStyle}>
-              Dashboard
-            </Link>
-            <span style={{ color: 'white' }}>
-              Hi, {user?.name || 'User'}
-            </span>
-            <button onClick={onLogout} style={buttonStyle}>
-              Logout
-            </button>
+            <button style={buttonSecondaryStyle} onClick={onLogout}>Logout</button>
           </>
         ) : (
           <>
-            <Link to="/signup" style={linkStyle}>
+            <Link to="/signin" style={navLinkStyle}>Log in</Link>
+            <button style={buttonPrimaryStyle} onClick={() => navigate('/signup')}>
               Sign up
-            </Link>
-            <Link to="/signin" style={linkStyle}>
-              Log in
-            </Link>
+            </button>
           </>
         )}
       </div>
